@@ -1,5 +1,6 @@
 Waves Node JS API
 =====
+[![npm version](https://badge.fury.io/js/waves-nodejs.svg)](https://badge.fury.io/js/waves-nodejs)
 
 A library to use [Waves](wavesplatform.com) blockchain from node.js based on [WavesDevKit](https://github.com/wavesplatform/WavesDevKit)
 
