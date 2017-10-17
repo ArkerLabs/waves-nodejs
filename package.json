@@ -1,0 +1,18 @@
+{
+  "name": "waves-nodejs",
+  "version": "1.0.1",
+  "description": "Use waves platform from nodejs",
+  "main": "waves.api.js",
+  "repository": "https://github.com/ArkerLabs/waves-nodejs",  
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "waves"
+  ],
+  "author": "Arker Labs",
+  "license": "ISC",
+  "dependencies": {
+    "request": "^2.83.0"
+  }
+}
