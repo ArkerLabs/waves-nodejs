@@ -35,7 +35,7 @@ Waves.appendNonce = function (originalSeed) {
 }
 
  // keccak 256 hash algorithm
- Waves.keccakHash = function(messageBytes) {
+Waves.keccakHash = function(messageBytes) {
     return sha3.keccak_256.array(messageBytes);
 }
 
