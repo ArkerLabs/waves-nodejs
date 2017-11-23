@@ -15,12 +15,14 @@ npm install waves-nodejs --save
 var Waves = require('waves-nodejs');
 
 Waves.api.sendAsset(
-    'https://stats.arker.io/',
-    'API KEY (optional)', 
+    'nodeUrl',
     'assetId', 
     'seed', 
     'recipient address', 
-    1 // amount
+    1, // amount
+    1, // fee
+    'feeAssetId',
+    'attachment'
 ).then(function(data) {
     console.log(data);
 }, function(err) {

@@ -113,8 +113,17 @@ Waves.signatureAssetData = function(senderPublicKey, assetId, feeAssetId, timest
     var timestampBytes  = Waves.longToByteArray(timestamp);
     var amountBytes     = Waves.longToByteArray(amount);
     var feeBytes        = Waves.longToByteArray(fee);
-    var recipientBytes  = Waves.base58StringToByteArray(recipient);
     var attachmentBytes = Waves.byteArrayWithSize(converters.stringToByteArray(attachment));
+
+    if (recipient.slice(0, 6) === 'alias:') {
+        var recipientBytes = [].concat(
+            [2], // ALIAS_VERSION
+            [recipient.slice(6, 7).charCodeAt(0) & 0xFF],
+            converters.stringToByteArrayWithSize(recipient.slice(8))
+        );
+    } else {
+        var recipientBytes  = Waves.base58StringToByteArray(recipient);
+    }
 
     return [].concat(transactionType, publicKeyBytes, assetIdBytes, feeAssetBytes, timestampBytes, amountBytes, feeBytes, recipientBytes, attachmentBytes);
 }
