@@ -53,4 +53,24 @@ Waves.api.sendAsset = function(nodeUrl, assetId, seed, recipient, amount, fee, f
     }); 
 }
 
+Waves.api.generateAddress = function(publicKey) {
+    var version = [0x01];
+    var scheme  = [0x57];
+    var keyHash = Waves.keccakHash(Waves.blake2bHash(new Uint8Array(Waves.base58StringToByteArray(publicKey)))).slice(0, 20);
+    var checksum = Waves.keccakHash(Waves.blake2bHash(new Uint8Array([].concat(
+        version,
+        scheme,
+        keyHash
+    )))).slice(0, 4);
+
+    var address = [].concat(
+        version,
+        scheme,
+        keyHash,
+        checksum
+    );
+
+    return Base58.encode(address);
+};
+
 module.exports = Waves;
