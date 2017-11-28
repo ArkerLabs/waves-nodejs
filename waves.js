@@ -105,6 +105,11 @@ Waves.longToByteArray = function (value) {
     return bytes;
 }
 
+Waves.stringToByteArrayWithSize = function (string) {
+    var bytes = converters.stringToByteArray(string);
+    return Waves.byteArrayWithSize(bytes);
+}
+
 Waves.signatureAssetData = function(senderPublicKey, assetId, feeAssetId, timestamp, amount, fee, recipient, attachment) {
     var transactionType = [4];
     var publicKeyBytes  = Waves.base58StringToByteArray(senderPublicKey);
@@ -119,7 +124,7 @@ Waves.signatureAssetData = function(senderPublicKey, assetId, feeAssetId, timest
         var recipientBytes = [].concat(
             [2], // ALIAS_VERSION
             [recipient.slice(6, 7).charCodeAt(0) & 0xFF],
-            converters.stringToByteArrayWithSize(recipient.slice(8))
+            Waves.stringToByteArrayWithSize(recipient.slice(8))
         );
     } else {
         var recipientBytes  = Waves.base58StringToByteArray(recipient);
