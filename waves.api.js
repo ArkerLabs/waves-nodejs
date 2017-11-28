@@ -10,6 +10,11 @@ Waves.api = {}
 Waves.api.sendAsset = function(nodeUrl, assetId, seed, recipient, amount, fee, feeAssetId, attachment) {
     return new Promise(function(resolve, reject) {   
 
+        const regex = /3P[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]*/g;
+        if (!regex.test(recipient)) {
+            recipient = "alias:W:" + recipient
+        }
+
         var timestamp = Date.now();
         var transferData = {
             "senderPublicKey": Waves.getPublicKey(seed),
@@ -53,10 +58,10 @@ Waves.api.sendAsset = function(nodeUrl, assetId, seed, recipient, amount, fee, f
     }); 
 }
 
-Waves.api.generateAddress = function(publicKey) {
+Waves.api.generateAddress = function(senderPublicKey) {
     var version = [0x01];
     var scheme  = [0x57];
-    var keyHash = Waves.keccakHash(Waves.blake2bHash(new Uint8Array(Waves.base58StringToByteArray(publicKey)))).slice(0, 20);
+    var keyHash = Waves.keccakHash(Waves.blake2bHash(new Uint8Array(Waves.base58StringToByteArray(senderPublicKey)))).slice(0, 20);
     var checksum = Waves.keccakHash(Waves.blake2bHash(new Uint8Array([].concat(
         version,
         scheme,
