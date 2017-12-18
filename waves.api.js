@@ -58,6 +58,44 @@ Waves.api.sendAsset = function(nodeUrl, assetId, seed, recipient, amount, fee, f
     }); 
 }
 
+Waves.api.cancelLeasing = function(nodeUrl, txId, seed, fee) {
+    return new Promise(function(resolve, reject) {   
+
+        var timestamp = Date.now();
+        var cancelData = {
+              "senderPublicKey": Waves.getPublicKey(seed),
+              "txId": txId,
+              "timestamp": timestamp,
+              "fee": fee
+        };
+
+        var dataToSign = Waves.signatureCancelLeasing(
+            cancelData['senderPublicKey'],
+            cancelData['fee'],
+            cancelData['timestamp'],
+            cancelData['txId']
+        );
+
+        var privateKeyBytes = Base58.decode(Waves.getPrivateKey(seed));
+
+        const crypto = require('crypto');
+        crypto.randomBytes(64, (err, buf) => {
+            if (err) throw err;
+            var signature = Base58.encode(curve25519.sign(privateKeyBytes, new Uint8Array(dataToSign), new Uint8Array(buf)));
+            
+            var dataToSend = cancelData;
+            dataToSend['signature'] = signature;
+        
+            var headers = {
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(JSON.stringify(dataToSend))
+            };
+
+            http.post(nodeUrl+'/leasing/broadcast/cancel', headers, JSON.stringify(dataToSend)).then(resolve, reject);
+        });
+    }); 
+}
+
 Waves.api.generateAddress = function(senderPublicKey) {
     var version = [0x01];
     var scheme  = [0x57];
