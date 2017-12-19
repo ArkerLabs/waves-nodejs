@@ -133,4 +133,14 @@ Waves.signatureAssetData = function(senderPublicKey, assetId, feeAssetId, timest
     return [].concat(transactionType, publicKeyBytes, assetIdBytes, feeAssetBytes, timestampBytes, amountBytes, feeBytes, recipientBytes, attachmentBytes);
 }
 
+Waves.signatureCancelLeasing = function(senderPublicKey, fee, timestamp, txId) {
+    var transactionType = [9];
+    var publicKeyBytes  = Waves.base58StringToByteArray(senderPublicKey);
+    var feeBytes        = Waves.longToByteArray(fee);
+    var timestampBytes  = Waves.longToByteArray(timestamp);
+    var txIdKeyBytes   = Waves.base58StringToByteArray(txId);
+
+    return [].concat(transactionType, publicKeyBytes, feeBytes, timestampBytes, txIdKeyBytes);
+}
+
 module.exports = Waves;
