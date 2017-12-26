@@ -110,7 +110,7 @@ Waves.stringToByteArrayWithSize = function (string) {
     return Waves.byteArrayWithSize(bytes);
 }
 
-Waves.signatureAssetData = function(senderPublicKey, assetId, feeAssetId, timestamp, amount, fee, recipient, attachment) {
+Waves.signatureAssetTransfer = function(senderPublicKey, assetId, feeAssetId, timestamp, amount, fee, recipient, attachment) {
     var transactionType = [4];
     var publicKeyBytes  = Waves.base58StringToByteArray(senderPublicKey);
     var assetIdBytes    = assetId ? [1].concat(Waves.base58StringToByteArray(assetId)) : [0];
@@ -133,12 +133,32 @@ Waves.signatureAssetData = function(senderPublicKey, assetId, feeAssetId, timest
     return [].concat(transactionType, publicKeyBytes, assetIdBytes, feeAssetBytes, timestampBytes, amountBytes, feeBytes, recipientBytes, attachmentBytes);
 }
 
-Waves.signatureCancelLeasing = function(senderPublicKey, fee, timestamp, txId) {
+Waves.signatureLease = function(senderPublicKey, recipient, amount, fee, timestamp) {
+    var transactionType = [8];
+    var publicKeyBytes  = Waves.base58StringToByteArray(senderPublicKey);
+    var amountBytes     = Waves.longToByteArray(amount);
+    var feeBytes        = Waves.longToByteArray(fee);
+    var timestampBytes  = Waves.longToByteArray(timestamp);
+
+    if (recipient.slice(0, 6) === 'alias:') {
+        var recipientBytes = [].concat(
+            [2], // ALIAS_VERSION
+            [recipient.slice(6, 7).charCodeAt(0) & 0xFF],
+            Waves.stringToByteArrayWithSize(recipient.slice(8))
+        );
+    } else {
+        var recipientBytes  = Waves.base58StringToByteArray(recipient);
+    }
+
+    return [].concat(transactionType, publicKeyBytes, recipientBytes, amountBytes, feeBytes, timestampBytes);
+}
+
+Waves.signatureCancelLease = function(senderPublicKey, fee, timestamp, txId) {
     var transactionType = [9];
     var publicKeyBytes  = Waves.base58StringToByteArray(senderPublicKey);
     var feeBytes        = Waves.longToByteArray(fee);
     var timestampBytes  = Waves.longToByteArray(timestamp);
-    var txIdKeyBytes   = Waves.base58StringToByteArray(txId);
+    var txIdKeyBytes    = Waves.base58StringToByteArray(txId);
 
     return [].concat(transactionType, publicKeyBytes, feeBytes, timestampBytes, txIdKeyBytes);
 }
