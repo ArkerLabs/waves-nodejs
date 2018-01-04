@@ -7,7 +7,7 @@ var converters = require('./lib/converters');
 
 Waves.api = {}
 
-Waves.api.sendAsset = function(nodeUrl, assetId, seed, recipient, amount, fee, feeAssetId, attachment) {
+Waves.api.assetTransfer = function(nodeUrl, assetId, seed, recipient, amount, fee, feeAssetId, attachment) {
     return new Promise(function(resolve, reject) {   
 
         const regex = /3P[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]*/g;
@@ -27,7 +27,7 @@ Waves.api.sendAsset = function(nodeUrl, assetId, seed, recipient, amount, fee, f
             "attachment": Base58.encode(converters.stringToByteArray(attachment))
         };
 
-        var dataToSign = Waves.signatureAssetData(
+        var dataToSign = Waves.signatureAssetTransfer(
             transferData['senderPublicKey'],
             transferData['assetId'],
             transferData['feeAssetId'],
@@ -58,7 +58,52 @@ Waves.api.sendAsset = function(nodeUrl, assetId, seed, recipient, amount, fee, f
     }); 
 }
 
-Waves.api.cancelLeasing = function(nodeUrl, txId, seed, fee) {
+Waves.api.lease = function(nodeUrl, seed, recipient, amount, fee) {
+    return new Promise(function(resolve, reject) {   
+
+        const regex = /3P[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]*/g;
+        if (!regex.test(recipient)) {
+            recipient = "alias:W:" + recipient
+        }
+
+        var timestamp = Date.now();
+        var transferData = {
+            "senderPublicKey": Waves.getPublicKey(seed),
+            "amount": parseInt(amount),
+            "fee": fee,
+            "recipient": recipient,
+            "timestamp": timestamp
+        };
+
+        var dataToSign = Waves.signatureLease(
+            transferData['senderPublicKey'],
+            transferData['recipient'],
+            transferData['amount'],
+            transferData['fee'],
+            transferData['timestamp']
+        );
+
+        var privateKeyBytes = Base58.decode(Waves.getPrivateKey(seed));
+
+        const crypto = require('crypto');
+        crypto.randomBytes(64, (err, buf) => {
+            if (err) throw err;
+            var signature = Base58.encode(curve25519.sign(privateKeyBytes, new Uint8Array(dataToSign), new Uint8Array(buf)));
+            
+            var dataToSend = transferData;
+            dataToSend['signature'] = signature;
+        
+            var headers = {
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(JSON.stringify(dataToSend))
+            };
+
+            http.post(nodeUrl+'/leasing/broadcast/lease', headers, JSON.stringify(dataToSend)).then(resolve, reject);
+        });
+    });  
+}
+
+Waves.api.cancelLease = function(nodeUrl, txId, seed, fee) {
     return new Promise(function(resolve, reject) {   
 
         var timestamp = Date.now();
@@ -69,7 +114,7 @@ Waves.api.cancelLeasing = function(nodeUrl, txId, seed, fee) {
               "fee": fee
         };
 
-        var dataToSign = Waves.signatureCancelLeasing(
+        var dataToSign = Waves.signatureCancelLease(
             cancelData['senderPublicKey'],
             cancelData['fee'],
             cancelData['timestamp'],
