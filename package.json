@@ -1,6 +1,6 @@
 {
   "name": "waves-nodejs",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Use waves platform from nodejs",
   "main": "waves.api.js",
   "repository": "https://github.com/ArkerLabs/waves-nodejs",
