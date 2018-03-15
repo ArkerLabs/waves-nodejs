@@ -65,6 +65,8 @@ Waves.base58StringToByteArray(base58String);
 Waves.longToByteArray(value);
 
 Waves.signatureAssetData(senderPublicKey, assetId, feeAssetId, timestamp, amount, fee, recipient, attachment);
+
+Waves.generateSeed();
 ```
 ## TODO
 
