@@ -10,7 +10,7 @@ Waves.api = {}
 Waves.api.assetTransfer = function(nodeUrl, assetId, seed, recipient, amount, fee, feeAssetId, attachment, testnet = false) {
     return new Promise(function(resolve, reject) {   
 
-        const regex = /(3P|3N)[a-zA-Z0-9]{33}/g;
+        const regex = /[a-zA-Z0-9]{35}/g;
         if (!regex.test(recipient)) {
             recipient = "alias:W:" + recipient
             if (testnet)
@@ -63,7 +63,7 @@ Waves.api.assetTransfer = function(nodeUrl, assetId, seed, recipient, amount, fe
 Waves.api.lease = function(nodeUrl, seed, recipient, amount, fee, testnet = false) {
     return new Promise(function(resolve, reject) {   
 
-        const regex = /(3P|3N)[a-zA-Z0-9]{33}/g;
+        const regex = /[a-zA-Z0-9]{35}/g;
         if (!regex.test(recipient)) {
             recipient = "alias:W:" + recipient
             if (testnet)
