@@ -7,12 +7,14 @@ var converters = require('./lib/converters');
 
 Waves.api = {}
 
-Waves.api.assetTransfer = function(nodeUrl, assetId, seed, recipient, amount, fee, feeAssetId, attachment) {
+Waves.api.assetTransfer = function(nodeUrl, assetId, seed, recipient, amount, fee, feeAssetId, attachment, testnet = false) {
     return new Promise(function(resolve, reject) {   
 
-        const regex = /3P[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]*/g;
+        const regex = /(3P|3N)[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]*/g;
         if (!regex.test(recipient)) {
             recipient = "alias:W:" + recipient
+            if (testnet)
+                recipient = "alias:T:" + recipient
         }
 
         var timestamp = Date.now();
@@ -58,12 +60,14 @@ Waves.api.assetTransfer = function(nodeUrl, assetId, seed, recipient, amount, fe
     }); 
 }
 
-Waves.api.lease = function(nodeUrl, seed, recipient, amount, fee) {
+Waves.api.lease = function(nodeUrl, seed, recipient, amount, fee, testnet = false) {
     return new Promise(function(resolve, reject) {   
 
-        const regex = /3P[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]*/g;
+        const regex = /(3P|3N)[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]*/g;
         if (!regex.test(recipient)) {
             recipient = "alias:W:" + recipient
+            if (testnet)
+                recipient = "alias:T:" + recipient
         }
 
         var timestamp = Date.now();
@@ -141,9 +145,13 @@ Waves.api.cancelLease = function(nodeUrl, txId, seed, fee) {
     }); 
 }
 
-Waves.api.generateAddress = function(senderPublicKey) {
+Waves.api.generateAddress = function(senderPublicKey, testnet = false) {
     var version = [0x01];
     var scheme  = [0x57];
+
+    if (testnet) 
+        scheme = [0x54];
+
     var keyHash = Waves.keccakHash(Waves.blake2bHash(new Uint8Array(Waves.base58StringToByteArray(senderPublicKey)))).slice(0, 20);
     var checksum = Waves.keccakHash(Waves.blake2bHash(new Uint8Array([].concat(
         version,
