@@ -25,4 +25,24 @@ http.post = function(url, headers, body) {
     
 }
 
+http.get = function(url, headers) {
+    return new Promise(function(resolve, reject) {
+        var options = {
+            url: url,
+            headers: headers
+        };
+        
+        function callback(error, response, body) {
+            if (!error && (response.statusCode == 200 || response.statusCode == 201)) {
+                resolve(JSON.parse(body));
+            } else {
+                reject(body);
+            }
+        }
+        
+        request.get(options, callback);
+    });
+    
+}
+
 module.exports = http;
