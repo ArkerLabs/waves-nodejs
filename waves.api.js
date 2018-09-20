@@ -169,6 +169,26 @@ Waves.api.generateAddress = function(senderPublicKey, testnet = false) {
     return Base58.encode(address);
 };
 
+Waves.api.getLastBlock = function(nodeUrl) {
+    var headers = {
+        'Content-Type': 'application/json'
+    };
+
+    return new Promise(function(resolve, reject) {
+        http.get(nodeUrl+'/blocks/last', headers).then(resolve, reject);
+    }); 
+}
+
+Waves.api.getBlock = function(nodeUrl, block) {
+    var headers = {
+        'Content-Type': 'application/json'
+    };
+
+    return new Promise(function(resolve, reject) {
+        http.get(nodeUrl+'/blocks/at/' + block, headers).then(resolve, reject);
+    }); 
+}
+
 Waves.api.balance = function(nodeUrl, assetId, address) {
     var headers = {
         'Content-Type': 'application/json'
