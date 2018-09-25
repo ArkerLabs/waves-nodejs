@@ -194,6 +194,12 @@ Waves.api.balance = function(nodeUrl, assetId, address) {
         'Content-Type': 'application/json'
     };
 
+    if (!assetId) {
+        return new Promise(function(resolve, reject) {
+            http.get(nodeUrl+'/addresses/balance/' + address, headers).then(resolve, reject);
+        }); 
+    }
+
     return new Promise(function(resolve, reject) {
         http.get(nodeUrl+'/assets/balance/' + address + '/' + assetId, headers).then(resolve, reject);
     }); 
